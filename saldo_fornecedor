@@ -1,0 +1,262 @@
+Private Sub btnBuscarMaterial_Click()
+ComboBox_forn.RowSource = "fornecedor!A2:A20"
+cod_complementar = txtCodComplementar.Value
+
+Sheets("codcomp").Select
+On Error GoTo pula
+    Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+        
+desc_material = ActiveCell.Offset(0, 1).Value
+
+txtDescMaterial.Value = desc_material
+desc = txtDescMaterial.Value
+Sheets("painel").Select
+
+pula:
+Sheets("painel").Select
+
+If desc = Empty Then
+
+ MsgBox "O código digitado:  '" & cod_complementar & "'  ,não está cadastrado. Cadastre-o ou digite outro."
+ txtCodComplementar.Value = ""
+ 
+ Range("b3").Select
+ 
+End If
+
+
+
+End Sub
+
+Private Sub btnEnviarMaterial_Click()
+
+Call almox
+Call fornecedor
+Call sv
+
+
+End Sub
+
+
+Sub almox()
+If OptionButton_almox.Value = True Then
+       'Call enviar
+       
+   cod_complementar = txtCodComplementar.Value
+
+   Sheets("codcomp").Select
+   Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+        
+  
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Copy
+    
+    Sheets("localizacao").Select
+    
+    'caso o codigo não esteja nesta aba pula para outra linha
+    On Error GoTo pula_almox
+    Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+    
+    
+    ActiveSheet.Paste
+    
+    'insere data de envio
+    ActiveCell.Offset(0, 3).Select
+    ActiveCell.FormulaR1C1 = "=NOW()"
+    
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    
+    ActiveCell.Offset(0, 1).Select
+    ActiveCell.Value = "ALMOXARIFADO"
+    
+    Sheets("painel").Select
+    MsgBox "Equipamento enviado ao: Almoxarifado."
+       
+pula_almox:
+   On Error GoTo pula_almox_fim
+   linfim = Cells(1048576, 1).End(xlUp).Row
+   Range("A" & linfim + 1).Select
+   ActiveSheet.Paste
+ 
+   'insere data de envio
+   Range("D" & linfim + 1).Select
+    
+   ActiveCell.FormulaR1C1 = "=NOW()"
+    
+   Selection.Copy
+   Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+   Application.CutCopyMode = False
+    
+   ActiveCell.Offset(0, 1).Select
+   ActiveCell.Value = "ALMOXARIFADO"
+
+pula_almox_fim:
+  Sheets("painel").Select
+  MsgBox "Equipamento enviado ao: Fornecedor."
+
+       
+End If
+End Sub
+
+Sub fornecedor()
+    
+If OptionButton_forn.Value = True Then
+       
+       
+  If ComboBox_forn.Value = Empty Then
+     MsgBox "Selecione um fornecedor."
+       
+      
+  Else
+        
+  cod_complementar = txtCodComplementar.Value
+
+  Sheets("codcomp").Select
+  Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+        
+  
+  Range(Selection, Selection.End(xlToRight)).Select
+  Selection.Copy
+    
+  Sheets("localizacao").Select
+    
+  On Error GoTo pula_forn
+  Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+    
+    
+  ActiveSheet.Paste
+    
+  'insere data de envio
+  ActiveCell.Offset(0, 3).Select
+  ActiveCell.FormulaR1C1 = "=NOW()"
+    
+  Selection.Copy
+  Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+  Application.CutCopyMode = False
+    
+    
+  ActiveCell.Offset(0, 1).Select
+  ActiveCell.Value = "FORNECEDOR"
+  cb = ComboBox_forn.Value
+  ActiveCell.Offset(0, 1).Select
+  ActiveCell.Value = cb
+  Sheets("painel").Select
+  MsgBox "Equipamento enviado ao: Fornecedor."
+        
+pula_forn:
+ On Error GoTo pula_forn_fim
+ linfim = Cells(1048576, 1).End(xlUp).Row
+ Range("A" & linfim + 1).Select
+ 
+ ActiveSheet.Paste
+ 
+ 'insere data de envio
+ Range("D" & linfim + 1).Select
+ ActiveCell.FormulaR1C1 = "=NOW()"
+    
+ Selection.Copy
+ Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+ Application.CutCopyMode = False
+    
+ ActiveCell.Offset(0, 1).Select
+ ActiveCell.Value = "FORNECEDOR"
+ cb = ComboBox_forn.Value
+ ActiveCell.Offset(0, 1).Select
+ ActiveCell.Value = cb
+    
+pula_forn_fim:
+ Sheets("painel").Select
+ MsgBox "Equipamento enviado ao: Fornecedor."
+        
+       
+ End If
+      
+End If
+
+End Sub
+
+Sub sv()
+'inicio saldo volante
+    
+If OptionButton_sv.Value = True Then
+   cod_complementar = txtCodComplementar.Value
+
+   Sheets("codcomp").Select
+   Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+        
+  
+   Range(Selection, Selection.End(xlToRight)).Select
+   Selection.Copy
+    
+   Sheets("localizacao").Select
+   On Error GoTo pula_sv
+   Cells.Find(What:=cod_complementar, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+        xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=True _
+        , SearchFormat:=False).Activate
+    
+    
+   ActiveSheet.Paste
+    
+    'insere data de envio
+   ActiveCell.Offset(0, 3).Select
+   ActiveCell.FormulaR1C1 = "=NOW()"
+    
+   Selection.Copy
+   Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+   Application.CutCopyMode = False
+          
+   ActiveCell.Offset(0, 1).Select
+   ActiveCell.Value = "SALDO VOLANTE"
+   Sheets("painel").Select
+   MsgBox "Equipamento enviado ao: Saldo volante."
+       
+pula_sv:
+   On Error GoTo pula_sv_fim
+   linfim = Cells(1048576, 1).End(xlUp).Row
+   Range("A" & linfim + 1).Select
+   ActiveSheet.Paste
+ 
+  'insere data de envio
+   Range("D" & linfim + 1).Select
+    
+   ActiveCell.FormulaR1C1 = "=NOW()"
+    
+   Selection.Copy
+   Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+   Application.CutCopyMode = False
+    
+   ActiveCell.Offset(0, 1).Select
+   ActiveCell.Value = "SALDO VOLANTE"
+
+pula_sv_fim:
+  Sheets("painel").Select
+  MsgBox "Equipamento enviado ao: Saldo volante."
+       
+End If
+ Sheets("painel").Select
+ Range("b3").Select
+  
+
+End Sub
+
+
