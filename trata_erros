@@ -1,0 +1,8 @@
+On Error GoTo pula
+pula:
+
+num = Err.Number
+If Err.Number > 0 Then
+
+MsgBox "Esta reserva não foi recebida pela Fedex."
+End If
