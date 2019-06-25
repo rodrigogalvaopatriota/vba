@@ -1,0 +1,5 @@
+ListBox1.ColumnWidths = "70;70;70;200;80;80;130;80"
+ListBox1.ColumnCount = 8
+ListBox1.RowSource = "analitico!A8:i" & linfim
+ListBox1.Font.Size = 10
+ListBox1.Font.Name = "Verdana"
