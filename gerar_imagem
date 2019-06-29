@@ -1,0 +1,58 @@
+Sub cabecalho()
+
+Dim tmpSheet As Worksheet
+Dim tmpChart As Chart
+Dim tmpImg As Object
+Dim img As String
+Sheets("DINAMICA MENSAL").Select
+Range("a1:m34").Select
+'Range("c3:j28").Select
+On Error GoTo erro
+
+
+Selection.CopyPicture Appearance:=xlPrinter, Format:=xlPicture
+
+Application.ScreenUpdating = False
+  Set tmpSheet = Worksheets.Add
+  Charts.Add
+  ActiveChart.Location Where:=xlLocationAsObject, Name:=tmpSheet.Name
+  Set tmpChart = ActiveChart
+  With tmpChart
+    .Paste
+    Set tmpImg = Selection
+    With .Parent
+      .Height = 300
+      .Width = 800
+    End With
+  End With
+
+'img = ThisWorkbook.Path & _
+      '"imagem_" & Format(Now, "yyyymmdd_hhmmss") & ".jpg"
+      
+'caminho = "Z:\ALMOXARIFADO\web\web-teste\img"
+'img = ThisWorkbook.Path & "documentos-rodape.jpg"
+img = "Z:\ALMOXARIFADO\web\web-teste\img\documentos-cabecalho.jpg"
+
+tmpChart.Export Filename:=img, FilterName:="jpg"
+
+Application.DisplayAlerts = False
+tmpSheet.Delete
+Application.DisplayAlerts = True
+
+Application.ScreenUpdating = True
+  MsgBox "Imagem exportada para o ficheiro:" & img, _
+         vbInformation, _
+         "Exportar para JPG"
+GoTo fim
+
+erro:
+MsgBox "Erro: " & Err.Description, _
+vbCritical, _
+"Erro: " & Err.Number
+
+fim:
+Set tmpSheet = Nothing
+Set tmpChart = Nothing
+Set tmpImg = Nothing
+
+End Sub
