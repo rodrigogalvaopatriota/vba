@@ -1,0 +1,40 @@
+'https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/getUpdates
+
+Sub enviar_telegram()
+    
+Dim objRequest As Object
+Dim strChatId As String
+Dim strMessage As String
+Dim strPostData As String
+Dim strResponse As String
+ 
+ 'strChatId = "1001312460068"
+ strChatId = "-1001312460068"
+ 
+' strChatId = "229336404"
+ 'strChatId = TextBox1.Value
+ 'strMessage = TextBox2.Value
+
+
+Sheets("recebidos").Select
+linfim = Cells(1048576, 14).End(xlUp).Row
+For linha = 2 To linfim
+
+
+strMessage = Range("n" & linha).Value
+strPostData = "chat_id=" & strChatId & "&text=" & strMessage
+ 
+ Set objRequest = CreateObject("MSXML2.XMLHTTP")
+With objRequest
+  .Open "POST", "https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/sendMessage?", False
+  .setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+  .send (strPostData)
+   GetSessionId = .responseText
+   'MsgBox GetSessionId
+End With
+ 
+Next
+
+MsgBox "Enviado para o Telegram."
+End Sub
+
