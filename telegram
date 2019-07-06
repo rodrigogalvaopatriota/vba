@@ -1,4 +1,5 @@
 'https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/getUpdates
+'para captar chat id, que permite entrar em um chat, grupo, realiza a operação (entra em um grupo), copia a url acima, e verica o chat id, e modifica o chat id no codigo
 
 Sub enviar_telegram()
     
