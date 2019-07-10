@@ -1,0 +1,32 @@
+'https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/getUpdates
+'para captar chat id, que permite entrar em um chat, grupo, realiza a operação (entra em um grupo), copia a url acima, e verica o chat id, e modifica o chat id no codigo
+
+Sub enviar_telegram()
+    
+Dim objRequest As Object
+Dim strChatId As String
+Dim strMessage As String
+Dim strPostData As String
+Dim strResponse As String
+ 
+Sheets("telegram").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+For linha = 2 To linfim
+strChatId = Cells(linha, 3).Value
+strMessage = Range("b" & linha).Value
+strPostData = "chat_id=" & strChatId & "&text=" & strMessage
+ 
+ Set objRequest = CreateObject("MSXML2.XMLHTTP")
+With objRequest
+  .Open "POST", "https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/sendMessage?", False
+  .setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+  .send (strPostData)
+   GetSessionId = .responseText
+   'MsgBox GetSessionId
+End With
+
+Next
+MsgBox "Enviado para o Telegram."
+End Sub
+
