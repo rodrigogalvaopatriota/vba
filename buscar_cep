@@ -1,0 +1,22 @@
+
+'é necessário dois criterios: =ConsultaCEP("82015036";celula)
+'celula = (exemplo d2) onde contém: logradouro ou bairro ou complemento ou localidade ou uf
+
+Function ConsultaCEP(valorcep As String, tipoCampo As String)
+'habilitar referencia microsoft XML, v3.0 e desabilitar microcsoft XML, v6.0
+Dim oXmlDoc As DOMDocument
+Dim oXmlNode As IXMLDOMNode
+Dim oXmlNodes As IXMLDOMNodeList
+
+Set oXmlDoc = New DOMDocument
+oXmlDoc.async = False
+
+oXmlDoc.Load ("https://viacep.com.br/ws/" + valorcep + "/xml/")
+
+Set oXmlNodes = oXmlDoc.SelectNodes("/xmlcep/" + tipoCampo)
+    
+For Each oXmlNode In oXmlNodes
+    ConsultaCEP = oXmlNode.Text
+Next
+
+End Function
