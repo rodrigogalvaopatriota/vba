@@ -1,3 +1,4 @@
+'simples
 Sub InsereLinha()
  For i = 1 To 11
   r = ActiveCell.Row
@@ -11,4 +12,35 @@ ActiveCell.Offset(1).EntireRow.Insert
 
 
 Next
+End Sub
+
+'com if
+Sub inserirLinha()
+
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+For linha = 2 To 100
+
+Range("h" & linha).Select
+num = Range("h" & linha).Value
+Range("h" & linha).Select
+num = Range("h" & linha).Value
+If num > 1 Then
+
+For i = 1 To num
+  r = ActiveCell.Row
+  Rows(r + 1).Select
+  Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+
+'ActiveCell.Offset(1).EntireRow.Insert
+linfim = Cells(1048576, 1).End(xlUp).Row 'problema nessa variavel
+Next
+
+
+End If
+
+Next
+
+Range("a2").Select
+MsgBox "processo finalizado."
 End Sub
