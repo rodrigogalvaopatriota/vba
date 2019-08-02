@@ -1,0 +1,14 @@
+Sub InsereLinha()
+ For i = 1 To 11
+  r = ActiveCell.Row
+  Rows(r).Select
+  Selection.Insert Shift:=xlDown, CopyOrigin:=xlFormatFromLeftOrAbove
+
+'ou
+
+ActiveCell.Offset(1).EntireRow.Insert
+
+
+
+Next
+End Sub
