@@ -1,0 +1,17 @@
+Sub deletar_coluna()
+
+    Const LINHA_TITULO = 1
+    'ultimaColuna = ActiveSheet.Range("A1").End(xlToRight).Column
+    ultimaColuna = 109
+    For i = 2 To ultimaColuna
+    conteudo = Cells(LINHA_TITULO, i).Value
+    
+    If conteudo = "|" Or conteudo = "" Then
+        Columns(i).Select
+        Selection.Delete Shift:=xlToLeft
+        'selectionl.Delete
+        colunasExcluidas = colunasExcluidas + 1
+        
+    End If
+Next i
+End Sub
