@@ -1,0 +1,35 @@
+'em: esta pasta de trabalho:
+
+Private Sub Workbook_Open()
+    'Chama a rotina com o tempo definido
+    Call gravar
+End Sub
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    'Cancela a execução do tempo
+    On Error Resume Next
+    Application.OnTime EarliestTime:=DownTime, Procedure:="ExecutaTempo5min", Schedule:=False
+
+End Sub
+
+
+'em algum modulo
+
+Sub gravar() 'Se a sua rotina tiver outro nome aqui
+     Range("L13").Select
+     ActiveCell.FormulaR1C1 = "=NOW()"
+     Range("L13").Select
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    
+    MsgBox "finalizado"
+    
+    Call timer
+End Sub
+
+Sub timer()
+     Application.OnTime Now + TimeValue("00:00:10"), "gravar" 'não esqueça de editar aqui
+End Sub
+
