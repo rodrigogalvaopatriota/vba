@@ -1,0 +1,85 @@
+'pasta atual
+
+
+'Private Sub Workbook_Open()
+    'Chama a rotina com o tempo definido
+    'Call disparar
+'End Sub
+
+Private Sub Workbook_BeforeClose(Cancel As Boolean)
+    'Cancela a execução do tempo
+    On Error Resume Next
+    Application.OnTime EarliestTime:=DownTime, Procedure:="ExecutaTempo5min", Schedule:=False
+
+End Sub
+
+'modulo
+
+Public un
+
+Sub disparar()
+   Call valores
+   EnviaEmail
+   MsgBox "O e-mail foi disparado com sucesso!", vbOKOnly, "e-mail enviado"
+   Call timer
+End Sub
+
+
+Sub valores()
+un = Range("b2").Value
+
+End Sub
+
+
+Function EnviaEmail()
+Dim iMsg, iConf, Flds
+
+Set iMsg = CreateObject("CDO.Message")
+Set iConf = CreateObject("CDO.Configuration")
+Set Flds = iConf.Fields
+
+schema = "http://schemas.microsoft.com/cdo/configuration/"
+Flds.Item(schema & "sendusing") = 2
+'Configura o smtp
+Flds.Item(schema & "smtpserver") = "smtp.gmail.com"
+'Configura a porta de envio de email
+Flds.Item(schema & "smtpserverport") = 465
+Flds.Item(schema & "smtpauthenticate") = 1
+'Configura o email do remetente
+Flds.Item(schema & "sendusername") = "almoxserede@gmail.com"
+'Configura a senha do email remetente
+Flds.Item(schema & "sendpassword") = "almoxarifado"
+Flds.Item(schema & "smtpusessl") = 1
+Flds.Update
+
+With iMsg
+   'Email do destinatário
+   .To = "rodrigo.patriota@seredesa.com.br"
+   'Seu email
+   .From = "almoxserede@gmail.com"
+   'Título do email
+   .Subject = "Unpicking"
+   'Mensagem do e-mail, você pode enviar formatado em HTML
+   .HTMLBody = "Olá, segue unpincking de hoje: " & un
+   'Seu nome ou apelido
+   .Sender = "Teste"
+   'Nome da sua organização
+   .Organization = "Aprender Excel"
+   'e-mail de responder para
+   .ReplyTo = "rodrigogalvaopatriota@gmail.com"
+   'Anexo a ser enviado na mensagem. Retire a aspa da linha abaixo e coloque o endereço do arquivo
+   '.AddAttachment ("C:\Users\tr642633\Documents\rodrigo\SPOT\Pasta1.xlsx")
+   Set .Configuration = iConf
+   .Send
+End With
+
+Set iMsg = Nothing
+Set iConf = Nothing
+Set Flds = Nothing
+End Function
+
+
+
+Sub timer()
+     Application.OnTime Now + TimeValue("00:00:10"), "disparar" 'não esqueça de editar aqui
+End Sub
