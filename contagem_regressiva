@@ -1,0 +1,16 @@
+Dim gCount As Date
+'Updateby20140925
+Sub Timer()
+    gCount = Now + TimeValue("00:00:01")
+    Application.OnTime gCount, "ResetTime"
+End Sub
+Sub ResetTime()
+Dim xRng As Range
+Set xRng = Application.ActiveSheet.Range("a2")
+xRng.Value = xRng.Value - TimeSerial(0, 0, 1)
+If xRng.Value <= 0 Then
+    MsgBox "Countdown complete."
+    Exit Sub
+End If
+Call Timer
+End Sub
