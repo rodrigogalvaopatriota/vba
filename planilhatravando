@@ -1,4 +1,6 @@
     
+    'https://blog.luz.vc/excel/10-dicas-para-manter-suas-planilhas-leves-para-nunca-mais-travarem/
+    
     'habilita calculo da formula automática
       Application.Calculation = xlAutomatic
     'desabilita calculo automatico da formula
