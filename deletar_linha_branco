@@ -1,0 +1,5 @@
+Sub apagaLinha()
+Columns("B:B").Select 'Adapte para a coluna que quiser
+Selection.SpecialCells(xlCellTypeBlanks).Select
+Selection.EntireRow.Delete
+End Sub
