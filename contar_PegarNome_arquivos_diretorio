@@ -1,0 +1,60 @@
+Sub base()
+   
+    Dim objFSO As Object
+    Dim objFolder As Object
+    Dim objFile As Object
+    Dim ws As Worksheet
+   
+    Set objFSO = CreateObject("Scripting.FileSystemObject")
+    'Set ws = Worksheets.Add
+    
+    Sheets("base").Select
+    linfim = Cells(1048576, 1).End(xlUp).Row
+    
+    'reset filter
+    Range("A1").Select
+    Selection.AutoFilter
+    Range("A1:H1").Select
+    Selection.AutoFilter
+
+    'clear
+    Range("A2:G" & linfim + 1).Select
+    Selection.ClearContents
+    
+    caminho = ActiveWorkbook.Path
+    
+    Set objFolder = objFSO.GetFolder(caminho & "\bases\")
+       
+    For Each objFile In objFolder.Files
+    
+     i = objFile.Name
+     
+     linfim = Cells(1048576, 1).End(xlUp).Row
+     Range("A" & linfim + 1).Select
+        
+     Workbooks.Open Filename:=caminho & "\bases\" & i
+    
+     linfim = Cells(1048576, 1).End(xlUp).Row
+     Range("A4:G" & linfim).Select
+     Selection.Copy
+     Windows("gestech.xlsm").Activate
+     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    
+     linfim = Cells(1048576, 1).End(xlUp).Row
+     Range("A" & linfim + 1).Select
+    
+    
+     Windows(i).Activate
+     Application.CutCopyMode = False
+     ActiveWindow.Close
+    
+    
+    
+    Next
+   
+    Set objFolder = Nothing
+    Set objFile = Nothing
+    Set objFSO = Nothing
+   
+End Sub
