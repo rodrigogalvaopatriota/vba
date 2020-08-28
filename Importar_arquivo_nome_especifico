@@ -1,0 +1,72 @@
+Sub antenas()
+
+    Cells.Select
+    Selection.ClearContents
+     caminho = ActiveWorkbook.Path
+    
+    
+    'define a data para inserir no nome do arquivo
+    Range("AI1").Select
+    ActiveCell.FormulaR1C1 = _
+        "=SUBSTITUTE(TEXT(TODAY()-1,""aaaa/mm/dd""),""/"",""_"")&"".csv"""
+    Range("AI1").Select
+    nome_origem = ActiveCell.Value
+    
+    Range("Aj1").Select
+    ActiveCell.FormulaR1C1 = _
+        "=SUBSTITUTE(TEXT(TODAY()-1,""aaaa/mm/dd""),""/"",""_"")"
+    Range("Aj1").Select
+    nome_origem1 = ActiveCell.Value
+    
+    'define nome do arquivo destino
+    nome_destino = nome_origem1 & ".xlsm"
+    
+    'pendencias: adicionar: caminho, nome, replicar codigo para outros arquivos
+    
+    Range("A1").Select
+    With ActiveSheet.QueryTables.Add(Connection:= _
+        "TEXT;" & caminho & "\DM0039_Antenas_Aplicadas_Baixa_" & nome_origem _
+        , Destination:=Range("$A$1"))
+        '.CommandType = 0
+        .Name = "DM0039_Antenas_Aplicadas_Baixa_" & nome_origem1
+        .FieldNames = True
+        .RowNumbers = False
+        .FillAdjacentFormulas = False
+        .PreserveFormatting = True
+        .RefreshOnFileOpen = False
+        .RefreshStyle = xlInsertDeleteCells
+        .SavePassword = False
+        .SaveData = True
+        .AdjustColumnWidth = True
+        .RefreshPeriod = 0
+        .TextFilePromptOnRefresh = False
+        .TextFilePlatform = 1252
+        .TextFileStartRow = 1
+        .TextFileParseType = xlDelimited
+        .TextFileTextQualifier = xlTextQualifierDoubleQuote
+        .TextFileConsecutiveDelimiter = False
+        .TextFileTabDelimiter = False
+        .TextFileSemicolonDelimiter = True
+        .TextFileCommaDelimiter = False
+        .TextFileSpaceDelimiter = False
+        .TextFileColumnDataTypes = Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, _
+        1, 1, 1, 1, 1, 1, 1)
+        .TextFileTrailingMinusNumbers = True
+        .Refresh BackgroundQuery:=False
+    End With
+    Range("A1").Select
+    
+    'salvar como arquivo diário em atualizar
+    ChDir _
+        caminho & "\atualizar"
+    ActiveWorkbook.SaveAs Filename:= _
+        caminho & "\atualizar\DM0039_Antenas_Aplicadas_Baixa_" & nome_destino _
+        , FileFormat:=xlOpenXMLWorkbookMacroEnabled, CreateBackup:=False
+        
+    'salvar como importa-exporta
+    ChDir _
+        caminho
+    ActiveWorkbook.SaveAs Filename:= _
+        caminho & "\importa-exporta.xlsm" _
+        , FileFormat:=xlOpenXMLWorkbookMacroEnabled, CreateBackup:=False
+End Sub
