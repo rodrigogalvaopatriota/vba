@@ -1,0 +1,20 @@
+Sub bloco_cnab()
+Sheets("modelo").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+
+Set fso = CreateObject("Scripting.FileSystemObject")
+caminho = ActiveWorkbook.Path & "/darf.txt"
+Set oFile = fso.CreateTextFile(caminho)
+
+
+For i = 2 To linfim
+ conteudo_cnab = Cells(i, 13).Value
+ oFile.WriteLine conteudo_cnab
+Next
+
+oFile.Close
+Set fso = Nothing
+Set oFile = Nothing
+
+End Sub
