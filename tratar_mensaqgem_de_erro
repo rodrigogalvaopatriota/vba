@@ -1,0 +1,5 @@
+Sub ActShtDel()
+    Application.DisplayAlerts = False
+    Sheets("Sheet1").Delete
+    Application.DisplayAlerts = True
+End Sub
