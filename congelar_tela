@@ -1,2 +1,2 @@
-Application.ScreenUpdating = False 'Descongela a tela
+Application.ScreenUpdating = False 'Descongela a tela.
 Application.ScreenUpdating = True 'Descongela a tela
