@@ -3,3 +3,4 @@ Sub ActShtDel()
     Sheets("Sheet1").Delete
     Application.DisplayAlerts = True
 End Sub
+'x
