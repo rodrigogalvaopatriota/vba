@@ -1,0 +1,416 @@
+
+Public caminho, photo_description As String
+Public i As Integer
+
+Sub geral()
+Application.ScreenUpdating = False
+caminho = ActiveWorkbook.Path
+Call clear_import
+'Call create_link_img
+Call set_message
+Call delete_empty
+Call get_photo
+
+Range("a1").Select
+
+Application.ScreenUpdating = True
+
+Range("b2").Select
+MsgBox "processo finalizado."
+End Sub
+
+Sub clear_import()
+caminho = ActiveWorkbook.Path
+Sheets("base").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+Range("a2:e" & linfim + 1).Select
+Selection.ClearContents
+Range("a2").Select
+
+Workbooks.Open FileName:=caminho & "\filename.xlsx"
+linfim = Cells(1048576, 1).End(xlUp).Row
+Range("a2:d" & linfim + 1).Select
+Selection.Copy
+
+Windows("filename_.xlsm").Activate
+ActiveSheet.Paste
+
+Windows("filename.xlsx").Activate
+Application.CutCopyMode = False
+ActiveWindow.Close
+End Sub
+
+Sub set_message()
+Sheets("base").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+Range("E2").Select
+ActiveCell.FormulaR1C1 = "=LEFT(RC[-1],25)"
+    
+Range("E2").Select
+Selection.AutoFill Destination:=Range("E2:E" & linfim), Type:=xlFillDefault
+Range("E2:E" & linfim).Select
+Selection.Copy
+
+Call paste_special
+
+
+For i = 2 To linfim
+
+valor_data = Range("e" & i).Value
+valor_data_2 = Range("e" & i + 1).Value
+valor_message = Range("c" & i).Value
+valor_message_2 = Range("c" & i + 1).Value
+
+If valor_data = valor_data_2 And valor_message_2 = Empty Then
+
+Range("c" & i + 1).Value = valor_message
+
+End If
+
+If valor_data = valor_data_2 And valor_message = Empty Then
+
+Range("c" & i).Value = valor_message_2
+End If
+
+Next
+
+End Sub
+
+Sub delete_empty()
+Sheets("base").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+    ActiveSheet.Range("$B$1:$E$" & linfim).AutoFilter Field:=4, Criteria1:="="
+    Range("C2" & linfim).Select
+    Selection.EntireRow.Delete
+    
+    Call auto_filter
+    
+    'ActiveSheet.Range("$A$1:$G$" & linfim).AutoFilter Field:=3, Criteria1:="="
+    'Range("A2").Select
+    'Range(Selection, Selection.End(xlDown)).Select
+    'Selection.EntireRow.Delete
+    
+    'Call auto_filter
+    
+    linfim = Cells(1048576, 1).End(xlUp).Row
+    
+    Range("F2").Select
+    ActiveCell.FormulaR1C1 = "=SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(CLEAN(RC[-3]),""/"",""""),""\"",""""),""?"","""")"
+    
+    
+    Range("F2").Select
+    Selection.AutoFill Destination:=Range("F2:F" & linfim), Type:=xlFillDefault
+    Range("F2:F" & linfim).Select
+    
+    
+    
+End Sub
+
+Sub get_photo()
+Application.DisplayAlerts = False
+Dim doc As Worksheet
+Dim spe As Shape
+Sheets("base").Select
+linfim = Cells(1048576, 2).End(xlUp).Row
+
+caminho = ActiveWorkbook.Path
+
+Set doc = Worksheets("book")
+
+Call delete_picture
+
+For i = 2 To linfim
+    Sheets("base").Select
+    photo_name = Range("d" & i).Value
+    photo_name_2 = Range("d" & i + 1).Value
+    photo_name_verify = Range("e" & i).Value
+    photo_name_verify_2 = Range("e" & i + 1).Value
+    photo_description = Range("f" & i).Value
+
+ 
+    If photo_description <> Empty And photo_name_verify = photo_name_verify_2 And photo_name_verify <> Empty Then
+    
+        Sheets("book").Select
+            
+        Range("A2").Value = "Poste: " & photo_description & " antes da adequação."
+        Range("A2").Select
+        message_1 = ActiveCell.Value
+        
+        Call create_file
+    
+        Range("A1:B1").Select
+        ActiveSheet.Pictures.Insert(caminho & "\logo.jpg").Select
+        Selection.Copy
+        Windows(photo_description & ".xlsx").Activate
+        Range("A1:B1").Select
+        ActiveSheet.Paste
+    
+        Windows(photo_description & ".xlsx").Activate
+        Range("a2").Value = message_1
+        'Selection.Paste
+    
+        Windows("filename_.xlsm").Activate
+    
+        'insert photo
+        'Range("A" & i + 1).Select
+        Range("A3").Select
+        ActiveSheet.Pictures.Insert(caminho & "\" & photo_name).Select
+        
+        Call photo_adjust
+   
+        'copy paste picture
+        Selection.Copy
+        Windows(photo_description & ".xlsx").Activate
+        Range("a3").Select
+        ActiveSheet.Paste
+        Call photo_adjust
+    
+        Windows("filename_.xlsm").Activate
+    
+        'insert photo_description
+        'Range("B" & i).Value = "Poste: " & photo_description & " depois da adequação."
+        Range("B2").Value = "Poste: " & photo_description & " depois da adequação."
+        Range("B2").Select
+        message_2 = ActiveCell.Value
+    
+    
+        'copy paste message2
+        'Selection.Copy
+        Windows(photo_description & ".xlsx").Activate
+        Range("B2").Value = message_2
+        'Selection.Paste
+    
+        Windows("filename_.xlsm").Activate
+    
+    
+        'Range("b" & i + 1).Select
+        Range("b3").Select
+        ActiveSheet.Pictures.Insert(caminho & "\" & photo_name_2).Select
+      
+        Call photo_adjust
+    
+        Selection.Copy
+        Windows(photo_description & ".xlsx").Activate
+        Range("b3").Select
+        ActiveSheet.Paste
+        Call photo_adjust
+    
+    
+        Windows(photo_description & ".xlsx").Activate
+        Call descricao_servicos
+        Call save_file
+        'Call delete_picture
+        'i = i + 1
+        
+    End If
+
+Next
+
+Range("g1").Value = "Quantidade de fotos inseridas: " & doc.Shapes.Count
+Call delete_picture
+End Sub
+
+Sub create_file()
+caminho = ActiveWorkbook.Path
+Workbooks.Add
+    
+    Rows("1:1").RowHeight = 147.75
+    Rows("2:2").RowHeight = 30.75
+    Columns("A:A").ColumnWidth = 90
+    Columns("B:B").ColumnWidth = 78.43
+    Rows("3:3").RowHeight = 310
+    Range("A1:B1").Select
+    ActiveCell.FormulaR1C1 = "RELATÓRIO FOTOGRÁFICO"
+    Range("A2").Select
+    
+    Range("A1:B1").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Merge
+    
+    Range("A1:B1").Select
+   
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = True
+    End With
+        
+ 
+    ChDir caminho
+    If photo_description <> Empty Then
+        ActiveWorkbook.SaveAs FileName:=caminho & "\books\" & photo_description & ".xlsx", FileFormat:=xlOpenXMLWorkbook, CreateBackup:=False
+        ActiveSheet.Name = "book"
+        
+        Sheets.Add After:=ActiveSheet
+        ActiveSheet.Name = "descricao_servicos"
+        Sheets("book").Select
+        
+    
+    End If
+    
+    
+    Windows("filename_.xlsm").Activate
+    Sheets("book").Select
+    
+    
+    
+End Sub
+
+Sub descricao_servicos()
+
+    Windows("filename_.xlsm").Activate
+    Sheets("descricao_servicos").Select
+    Cells.Select
+    Selection.Copy
+    Windows(photo_description & ".xlsx").Activate
+    Sheets("descricao_servicos").Select
+    ActiveWindow.Zoom = 42
+    'ActiveWindow.DisplayGridlines = False
+    Cells.Select
+    ActiveSheet.Paste
+    ActiveWindow.DisplayGridlines = False
+    Sheets("book").Select
+    
+    'Selection.ShapeRange.Height = 15
+    'Selection.ShapeRange.Width = 40
+    
+    
+    'Rows("2:2").RowHeight = 100
+   
+    
+    
+End Sub
+
+Sub save_file()
+    Windows(photo_description & ".xlsx").Activate
+    ActiveWorkbook.Save
+    ActiveWindow.Close
+End Sub
+Sub photo_adjust()
+
+    Selection.ShapeRange.AutoShapeType = msoShapeRectangle
+    'Selection.ShapeRange.AutoShapeType = msoShapeOval
+    Selection.ShapeRange.Height = 300
+    
+    Selection.ShapeRange.IncrementLeft 111
+    Selection.ShapeRange.IncrementTop 10.5
+    
+    
+    altura = Selection.ShapeRange.Height
+    largura = Selection.ShapeRange.Width
+    
+    If largura > 500 Then
+    Selection.ShapeRange.Width = 300
+    Selection.ShapeRange.IncrementLeft -46
+    Selection.ShapeRange.IncrementTop 55
+    End If
+    
+End Sub
+
+
+
+Sub delete_picture()
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+
+
+Sheets("book").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+Range("a2:b" & linfim + 1).Select
+Selection.ClearContents
+
+End Sub
+'Private Sub CommandButton1_Click()
+Sub get_shape_name_delete()
+Dim doc As Worksheet
+Dim spe As Shape
+Sheets("book").Select
+
+
+Set doc = Worksheets("book")
+
+    For i = 1 To doc.Shapes.Count
+        On Error GoTo error_img
+        Set spe = doc.Shapes(i)
+        
+        Range("f1").Value = doc.Shapes(i).Name
+        Range("g1").Value = doc.Shapes.Count
+        
+        'spe.Select
+        shape_name = doc.Shapes(i).Name
+        ActiveSheet.Shapes.Range(Array(shape_name)).Select
+        Selection.Delete
+        Selection.Copy
+    Range("f1").Value = ""
+    Next
+
+
+error_img:
+
+
+End Sub
+
+Function GetSourceInfo(oShp As Shape) As String
+    On Error GoTo Error_GetSourceInfo
+    GetSourceInfo = oShp.LinkFormat.SourceFullName
+    Exit Function
+Error_GetSourceInfo:
+   GetSourceInfo = ""
+End Function
+
+Sub auto_filter()
+Range("a1").Select
+Selection.AutoFilter
+Selection.AutoFilter
+End Sub
+
+Sub paste_special()
+ 
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+
+End Sub
+
+Sub create_link_img()
+Sheets("base").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+For i = 2 To linfim
+Range("d" & i).Select
+valor = ActiveCell.Value
+If valor <> Empty Then
+'On Error GoTo error
+
+ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:=valor, TextToDisplay:=valor
+End If
+Next
+   
+End Sub
