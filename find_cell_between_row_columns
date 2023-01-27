@@ -1,0 +1,26 @@
+Sub SelectCell()
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("vital")
+    
+    ' Define o valor da linha e da coluna
+    Dim linha As String
+    linha = "BACKLOG INÍCIO DIA"
+    Dim coluna As String
+    
+    coluna = "27"
+    
+    ' Procura a célula com o valor da linha
+    Dim celulaLinha As Range
+    Set celulaLinha = ws.Cells.Find(What:=linha, LookIn:=xlValues, LookAt:=xlWhole)
+    
+    ' Procura a célula com o valor da coluna
+    Dim celulaColuna As Range
+    Set celulaColuna = ws.Cells.Find(What:=coluna, LookIn:=xlValues, LookAt:=xlWhole)
+    
+    ' Seleciona a célula que se localiza no eixo
+    If Not celulaLinha Is Nothing And Not celulaColuna Is Nothing Then
+        Dim celula As Range
+        Set celula = ws.Cells(celulaLinha.Row, celulaColuna.Column)
+        celula.Select
+    End If
+End Sub
