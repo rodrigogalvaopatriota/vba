@@ -1,0 +1,44 @@
+Sub exportToJPG()
+
+Dim tmpSheet As Worksheet
+Dim tmpChart As Chart
+Dim tmpImg As Object
+Dim img As String
+
+On Error GoTo erro
+Sheets("vital").Select
+Range("b2:aj43").Select
+Selection.CopyPicture Appearance:=xlPrinter, Format:=xlPicture
+
+
+Set tmpSheet = Worksheets.Add
+Charts.Add
+ActiveChart.Location Where:=xlLocationAsObject, Name:=tmpSheet.Name
+  Set tmpChart = ActiveChart
+  With tmpChart
+    .Paste
+    Set tmpImg = Selection
+    With .Parent
+      .Height = 300
+      .Width = 700
+    End With
+  End With
+
+img = ThisWorkbook.Path & "\img.jpg"
+
+tmpChart.Export Filename:=img, FilterName:="jpg"
+tmpSheet.Delete
+ 
+GoTo fim
+
+erro:
+MsgBox "Erro: " & Err.Description, _
+vbCritical, _
+"Erro: " & Err.Number
+
+fim:
+Set tmpSheet = Nothing
+Set tmpChart = Nothing
+Set tmpImg = Nothing
+
+End Sub
