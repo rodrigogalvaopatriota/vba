@@ -1,0 +1,98 @@
+
+Public caminho, photo_description As String
+Public i As Integer
+
+Sub geral()
+Application.ScreenUpdating = False
+caminho = ActiveWorkbook.Path
+'clear
+Sheets("book").Select
+linfim = Cells(1048576, 2).End(xlUp).Row
+Range("a2:b" & linfim + 1).Select
+Selection.ClearContents
+
+Call delete_picture
+Call get_photo
+Range("a1").Select
+
+Application.ScreenUpdating = True
+
+Range("b2").Select
+MsgBox "processo finalizado."
+End Sub
+
+
+Sub delete_picture()
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+Call get_shape_name_delete
+
+
+Sheets("book").Select
+linfim = Cells(1048576, 1).End(xlUp).Row
+
+Range("a2:b" & linfim + 1).Select
+Selection.ClearContents
+
+End Sub
+'Private Sub CommandButton1_Click()
+Sub get_shape_name_delete()
+Dim doc As Worksheet
+Dim spe As Shape
+Sheets("book").Select
+
+
+Set doc = Worksheets("book")
+
+    For i = 1 To doc.Shapes.Count
+        On Error GoTo error_img
+        Set spe = doc.Shapes(i)
+        
+        Range("f1").Value = doc.Shapes(i).Name
+        Range("g1").Value = doc.Shapes.Count
+        
+        'spe.Select
+        shape_name = doc.Shapes(i).Name
+        ActiveSheet.Shapes.Range(Array(shape_name)).Select
+        Selection.Delete
+        Selection.Copy
+    Range("f1").Value = ""
+    Next
+
+
+error_img:
+
+
+End Sub
+
+Sub get_photo()
+Application.DisplayAlerts = False
+Dim doc As Worksheet
+Dim spe As Shape
+Sheets("base").Select
+linfim = Cells(1048576, 2).End(xlUp).Row
+
+caminho = ActiveWorkbook.Path
+Set doc = Worksheets("book")
+
+For i = 2 To linfim
+    Sheets("base").Select
+    photo_name = Range("d" & i).Value
+    Description = Range("c" & i).Value
+    Sheets("book").Select
+    Range("a" & i).Select
+    ActiveSheet.Pictures.Insert(caminho & "\books\" & photo_name).Select
+    Call photo_adjust
+    Range("b" & i).Value = Description
+        
+
+Next
+
+End Sub
