@@ -1,0 +1,3 @@
+address_cell = ActiveCell.Address
+adress_cell_complete = address_cell & ":z" & linfim
+Range(adress_cell_complete).Select
