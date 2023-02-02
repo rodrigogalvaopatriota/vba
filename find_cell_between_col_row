@@ -1,0 +1,19 @@
+Sub select_97()
+         
+    '97
+    'backlog
+    linha = "BACKLOG INÍCIO DIAV.TAL BA 97"
+    ' Procura a célula com o valor da linha
+     Set celulaLinha = ws.Cells.Find(What:=linha, LookIn:=xlValues, LookAt:=xlWhole)
+    ' Procura a célula com o valor da coluna
+     Set celulaColuna = ws.Cells.Find(What:=coluna, LookIn:=xlValues, LookAt:=xlWhole)
+     ' Seleciona a célula que se localiza no eixo
+    If Not celulaLinha Is Nothing And Not celulaColuna Is Nothing Then
+        Dim celula As Range
+        Set celula = ws.Cells(celulaLinha.Row, celulaColuna.Column)
+        celula.Select
+    End If
+    Call copy_paste_special
+    
+    
+End Sub
