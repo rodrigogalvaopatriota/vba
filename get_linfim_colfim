@@ -1,0 +1,6 @@
+linfim = Cells(1048576, 2).End(xlUp).Row
+colfim = Cells(4, Columns.Count).End(xlToLeft).Select
+col_address = ActiveCell.Address
+col_address = Left(col_address, 2)
+col_address = Right(col_address, 1)
+Range("b3:" & col_address & linfim).Select
