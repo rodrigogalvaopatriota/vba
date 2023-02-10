@@ -1,0 +1,49 @@
+Sub exportToJPG_produtividade()
+
+Dim tmpSheet As Worksheet
+Dim tmpChart As Chart
+Dim tmpImg As Object
+Dim img As String
+Application.DisplayAlerts = False
+On Error GoTo erro
+Sheets("produtividade_din").Select
+linfim = Cells(1048576, 2).End(xlUp).Row
+colfim = Cells(4, Columns.Count).End(xlToLeft).Select
+col_address = ActiveCell.Address
+col_address = Left(col_address, 2)
+col_address = Right(col_address, 1)
+Range("b3:" & col_address & linfim).Select
+Selection.CopyPicture Appearance:=xlPrinter, Format:=xlPicture
+
+
+Set tmpSheet = Worksheets.Add
+Charts.Add
+ActiveChart.Location Where:=xlLocationAsObject, Name:=tmpSheet.Name
+  Set tmpChart = ActiveChart
+  With tmpChart
+    .Paste
+    Set tmpImg = Selection
+    With .Parent
+      .Height = 500
+      .Width = 400
+    End With
+  End With
+
+img = ThisWorkbook.Path & "\img_prod.jpg"
+
+tmpChart.Export Filename:=img, FilterName:="jpg"
+tmpSheet.Delete
+ 
+GoTo fim
+
+erro:
+MsgBox "Erro: " & Err.Description, _
+vbCritical, _
+"Erro: " & Err.Number
+
+fim:
+Set tmpSheet = Nothing
+Set tmpChart = Nothing
+Set tmpImg = Nothing
+
+End Sub
