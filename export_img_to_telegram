@@ -1,0 +1,294 @@
+Sub export_to_telegram()
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+Call exportToJPG_painel
+Call geral_telegram
+
+Application.ScreenUpdating = True
+
+End Sub
+Sub exportToJPG_painel()
+
+Dim tmpSheet As Worksheet
+Dim tmpChart As Chart
+Dim tmpImg As Object
+Dim img As String
+
+On Error GoTo erro
+Sheets("vital").Select
+Range("b2:an20").Select
+Selection.CopyPicture Appearance:=xlPrinter, Format:=xlPicture
+
+
+Set tmpSheet = Worksheets.Add
+Charts.Add
+ActiveChart.Location Where:=xlLocationAsObject, Name:=tmpSheet.Name
+  Set tmpChart = ActiveChart
+  With tmpChart
+    .Paste
+    Set tmpImg = Selection
+    With .Parent
+      .Height = 400
+      .Width = 700
+    End With
+  End With
+
+img = ThisWorkbook.Path & "\img.jpg"
+
+tmpChart.Export Filename:=img, FilterName:="jpg"
+tmpSheet.Delete
+ 
+GoTo fim
+
+erro:
+MsgBox "Erro: " & Err.Description, _
+vbCritical, _
+"Erro: " & Err.Number
+
+fim:
+Set tmpSheet = Nothing
+Set tmpChart = Nothing
+Set tmpImg = Nothing
+
+End Sub
+
+Sub exportToJPG_produtividade()
+
+Dim tmpSheet As Worksheet
+Dim tmpChart As Chart
+Dim tmpImg As Object
+Dim img As String
+Application.DisplayAlerts = False
+On Error GoTo erro
+Sheets("produtividade_din").Select
+linfim = Cells(1048576, 2).End(xlUp).Row
+colfim = Cells(4, Columns.Count).End(xlToLeft).Select
+col_address = ActiveCell.Address
+col_address = Left(col_address, 2)
+col_address = Right(col_address, 1)
+Range("b3:" & col_address & linfim).Select
+Selection.CopyPicture Appearance:=xlPrinter, Format:=xlPicture
+
+
+Set tmpSheet = Worksheets.Add
+Charts.Add
+ActiveChart.Location Where:=xlLocationAsObject, Name:=tmpSheet.Name
+  Set tmpChart = ActiveChart
+  With tmpChart
+    .Paste
+    Set tmpImg = Selection
+    With .Parent
+      .Height = 500
+      .Width = 400
+    End With
+  End With
+
+img = ThisWorkbook.Path & "\img_prod.jpg"
+
+tmpChart.Export Filename:=img, FilterName:="jpg"
+tmpSheet.Delete
+ 
+GoTo fim
+
+erro:
+MsgBox "Erro: " & Err.Description, _
+vbCritical, _
+"Erro: " & Err.Number
+
+fim:
+Set tmpSheet = Nothing
+Set tmpChart = Nothing
+Set tmpImg = Nothing
+
+End Sub
+
+'https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/getUpdates
+'para captar chat id, que permite entrar em um chat, grupo, realiza a operação (entra em um grupo), copia a url acima, e verica o chat id, e modifica o chat id no codigo
+Sub geral_telegram()
+caminho = ActiveWorkbook.Path
+Call telegram_send_message
+Call telegram_send_picture
+Call telegram_send_picture_prod
+
+MsgBox "Mensagens  e arquivos jpg enviados para o telegram."
+End Sub
+
+Sub telegram_send_message()
+  
+Dim objRequest As Object
+Dim strChatId As String
+Dim strMessage As String
+Dim strPostData As String
+Dim strResponse As String
+
+Application.DisplayAlerts = False
+'For linha = 2 To linfim
+'-804334404
+'strChatId = "-891173132"
+strChatId = "-885665283"
+
+strMessage = "TESTANDO BOT, IGNORAR ESTA MENSAGEM: Segue plano de voo vital:"
+'strMessage = "TESTANDO BOT: DESCONSIDERAR ESTA MENSAGEM:"
+strPostData = "chat_id=" & strChatId & "&text=" & strMessage
+ 
+ Set objRequest = CreateObject("MSXML2.XMLHTTP")
+With objRequest
+  .Open "POST", "https://api.telegram.org/bot863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI/sendMessage?", False
+  .setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+  .send (strPostData)
+   GetSessionId = .responseText
+   'MsgBox GetSessionId
+End With
+
+'Next
+'MsgBox "Enviado para o Telegram."
+End Sub
+
+Sub telegram_send_picture()
+    caminho = ActiveWorkbook.Path
+    Const URL = "https://api.telegram.org/bot"
+    Const TOKEN = "863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI"
+    Const METHOD_NAME = "/sendPhoto?"
+    'Const CHAT_ID = "-891173132"
+    Const CHAT_ID = "-885665283"
+    
+    '-804334404
+    'Const FOLDER = "C:\Users\Rafael\Documents\icomon\home_connect"
+    FOLDER = caminho
+    Const JPG_FILE = "\img.jpg"
+    
+    Dim data As Object, key
+    Set data = CreateObject("Scripting.Dictionary")
+    data.Add "chat_id", CHAT_ID
+    
+    ' generate boundary
+    Dim BOUNDARY, s As String, n As Integer
+    For n = 1 To 16: s = s & Chr(65 + Int(Rnd * 25)): Next
+    BOUNDARY = s & CDbl(Now)
+
+    Dim part As String, ado As Object
+    For Each key In data.keys
+        part = part & "--" & BOUNDARY & vbCrLf
+        part = part & "Content-Disposition: form-data; name=""" & key & """" & vbCrLf & vbCrLf
+        part = part & data(key) & vbCrLf
+    Next
+    ' filename
+    part = part & "--" & BOUNDARY & vbCrLf
+    part = part & "Content-Disposition: form-data; name=""photo""; filename=""" & JPG_FILE & """" & vbCrLf & vbCrLf
+    
+    ' read jpg file as binary
+    Dim jpg
+    Set ado = CreateObject("ADODB.Stream")
+    ado.Type = 1 'binary
+    ado.Open
+    ado.LoadFromFile FOLDER & JPG_FILE
+    ado.Position = 0
+    jpg = ado.read
+    ado.Close
+
+    ' combine part, jpg , end
+    ado.Open
+    ado.Position = 0
+    ado.Type = 1 ' binary
+    ado.Write ToBytes(part)
+    ado.Write jpg
+    ado.Write ToBytes(vbCrLf & "--" & BOUNDARY & "--")
+    ado.Position = 0
+
+    Dim req As Object, reqURL As String
+    Set req = CreateObject("MSXML2.XMLHTTP")
+    reqURL = URL & TOKEN & METHOD_NAME
+    With req
+        .Open "POST", reqURL, False
+        .setRequestHeader "Content-Type", "multipart/form-data; boundary=" & BOUNDARY
+        '.send ("Conclusão:")
+        .send ado.read
+        'MsgBox .responseText
+    End With
+
+End Sub
+
+Sub telegram_send_picture_prod()
+    caminho = ActiveWorkbook.Path
+    Const URL = "https://api.telegram.org/bot"
+    Const TOKEN = "863878594:AAE95kZdNGyn1CVzdETsj0Gt0dl37JdMCfI"
+    Const METHOD_NAME = "/sendPhoto?"
+    'Const CHAT_ID = "-891173132"
+    Const CHAT_ID = "-885665283"
+    
+    '-804334404
+    'Const FOLDER = "C:\Users\Rafael\Documents\icomon\home_connect"
+    FOLDER = caminho
+    Const JPG_FILE = "\img_prod.jpg"
+    
+    Dim data As Object, key
+    Set data = CreateObject("Scripting.Dictionary")
+    data.Add "chat_id", CHAT_ID
+    
+    ' generate boundary
+    Dim BOUNDARY, s As String, n As Integer
+    For n = 1 To 16: s = s & Chr(65 + Int(Rnd * 25)): Next
+    BOUNDARY = s & CDbl(Now)
+
+    Dim part As String, ado As Object
+    For Each key In data.keys
+        part = part & "--" & BOUNDARY & vbCrLf
+        part = part & "Content-Disposition: form-data; name=""" & key & """" & vbCrLf & vbCrLf
+        part = part & data(key) & vbCrLf
+    Next
+    ' filename
+    part = part & "--" & BOUNDARY & vbCrLf
+    part = part & "Content-Disposition: form-data; name=""photo""; filename=""" & JPG_FILE & """" & vbCrLf & vbCrLf
+    
+    ' read jpg file as binary
+    Dim jpg
+    Set ado = CreateObject("ADODB.Stream")
+    ado.Type = 1 'binary
+    ado.Open
+    ado.LoadFromFile FOLDER & JPG_FILE
+    ado.Position = 0
+    jpg = ado.read
+    ado.Close
+
+    ' combine part, jpg , end
+    ado.Open
+    ado.Position = 0
+    ado.Type = 1 ' binary
+    ado.Write ToBytes(part)
+    ado.Write jpg
+    ado.Write ToBytes(vbCrLf & "--" & BOUNDARY & "--")
+    ado.Position = 0
+
+    Dim req As Object, reqURL As String
+    Set req = CreateObject("MSXML2.XMLHTTP")
+    reqURL = URL & TOKEN & METHOD_NAME
+    With req
+        .Open "POST", reqURL, False
+        .setRequestHeader "Content-Type", "multipart/form-data; boundary=" & BOUNDARY
+        '.send ("Conclusão:")
+        .send ado.read
+        'MsgBox .responseText
+    End With
+
+End Sub
+
+Function ToBytes(str As String) As Variant
+
+    Dim ado As Object
+    Set ado = CreateObject("ADODB.Stream")
+    ado.Open
+    ado.Type = 2 ' text
+    ado.Charset = "_autodetect"
+    ado.WriteText str
+    ado.Position = 0
+    ado.Type = 1
+    ToBytes = ado.read
+    ado.Close
+
+End Function
+
+
+
+
+
+
