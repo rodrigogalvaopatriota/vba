@@ -1,0 +1,8 @@
+Sub table_update()
+Sheets("din").Select
+Cells.Find(What:="table_one", After:=ActiveCell, LookIn:=xlFormulas, LookAt:=xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=False, SearchFormat:=False).Activate
+ActiveCell.Offset(0, 1).Select
+table_name_one = ActiveCell.PivotTable.Name
+ActiveSheet.PivotTables(table_name_one).PivotCache.Refresh
+
+End Sub
