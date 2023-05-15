@@ -1,3 +1,6 @@
+Dim address_cell, address_cell_complete As Range
+
+
 address_cell = ActiveCell.Address
-adress_cell_complete = address_cell & ":z" & linfim
-Range(adress_cell_complete).Select
+address_cell_complete = address_cell & ":z" & linfim
+Range(address_cell_complete).Select
