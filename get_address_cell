@@ -1,6 +1,17 @@
 Dim address_cell, address_cell_complete As Range
 
 
-address_cell = ActiveCell.Address
-address_cell_complete = address_cell & ":z" & linfim
-Range(address_cell_complete).Select
+'address_cell = ActiveCell.Address
+'address_cell_complete = address_cell & ":z" & linfim
+'Range(address_cell_complete).Select
+
+
+Cells.Find(What:="funcionario_id", After:=ActiveCell, LookIn:=xlFormulas, LookAt:=xlWhole, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=False, SearchFormat:=False).Activate
+ 'get range after find per funcionario_id
+ ActiveCell.Offset(1, 0).Select
+ cell_start = ActiveCell.Address
+ col = Split(cell_start, "$")(1)
+ 
+ cell_range = cell_start & ":" & col & linfim
+       
+Range(cell_range).Select
