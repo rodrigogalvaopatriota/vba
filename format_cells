@@ -1,0 +1,13 @@
+Sub formatForcing()
+    Dim rng As Range
+    Set rng = Range("A1:A10") ' Substitua pela faixa de células que deseja converter para data
+
+    ' Definir o formato de texto como data usando o TextToColumns
+    rng.TextToColumns Destination:=rng, DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, _
+        Tab:=False, Semicolon:=False, Comma:=False, Space:=False, _
+        Other:=False, FieldInfo:=Array(1, xlDMYFormat)
+
+    ' Definir o formato das células como data
+    rng.NumberFormat = "dd/mm/yyyy"
+End Sub
