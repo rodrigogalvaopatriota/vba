@@ -12,6 +12,6 @@ Cells.Find(What:="funcionario_id", After:=ActiveCell, LookIn:=xlFormulas, LookAt
  cell_start = ActiveCell.Address
  col = Split(cell_start, "$")(1)
  
- cell_range = cell_start & ":" & col & linfim
+ cell_range = cell_start & ":" & col
        
-Range(cell_range).Select
+Range(cell_range & linfim).Select
